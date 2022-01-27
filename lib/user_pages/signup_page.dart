@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:scm_flutter/user_pages/loading.dart';
+import 'package:scm_flutter/user_pages/home_page.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -8,10 +12,15 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+
   late String _name;
   late String _email;
   late String _password;
-  late bool _role;
+  String _role = "Buyer";
+  final List<String> _roles = ["Buyer", "Seller"];
+  bool loading = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -36,7 +45,11 @@ class _SignUpState extends State<SignUp> {
           labelText: "Email", border: OutlineInputBorder()),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return "Email address is required";
+          if (!RegExp(
+                  r"[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+              .hasMatch(value!)) {
+            return "Enter a valid email address";
+          }
         }
       },
       onSaved: (value) {
@@ -48,7 +61,8 @@ class _SignUpState extends State<SignUp> {
   Widget _buildPassword() {
     return TextFormField(
       decoration: const InputDecoration(
-          labelText: "Password", border: OutlineInputBorder()), obscureText: true,
+          labelText: "Password", border: OutlineInputBorder()),
+      obscureText: true,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return "Password is required";
@@ -61,12 +75,24 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget _buildRole() {
-    return Container();
+    return DropdownButton(
+        value: _role,
+        items: _roles.map((String selectedRole) {
+          return DropdownMenuItem(
+            value: selectedRole,
+            child: Text(selectedRole),
+          );
+        }).toList(),
+        onChanged: (String? value) {
+          setState(() {
+            _role = value!;
+          });
+        });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? const Loading() : Scaffold(
       body: SafeArea(
         child: Container(
           margin: const EdgeInsets.fromLTRB(15.0, 24.0, 15.0, 15.0),
@@ -94,10 +120,33 @@ class _SignUpState extends State<SignUp> {
                   height: 10.0,
                 ),
                 OutlinedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
                     }
+                    setState(() => loading = true);
+                    await _auth.createUserWithEmailAndPassword(
+                        email: _email, password: _password);
+
+                    Map<String, dynamic> userData = {
+                      "name": _name,
+                      "email": _email,
+                      "role": _role,
+                      "user_id": FieldValue.increment(1)
+                    };
+
+                    await _db
+                        .collection("Users")
+                        .doc(_auth.currentUser!.uid)
+                        .set(userData);
+
+                    await _auth.currentUser!.updateDisplayName(_name);
+                    setState(() => loading = false);
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()),
+                            (Route<dynamic> route) => false);
                   },
                   child: const Text(
                     "Submit",

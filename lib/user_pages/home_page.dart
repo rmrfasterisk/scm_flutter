@@ -1,56 +1,61 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:scm_flutter/user_pages/login_page.dart';
-import 'package:scm_flutter/user_pages/signup_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final _auth = FirebaseAuth.instance;
+
+  List<Map<String, dynamic>> items = [
+    {"name": "Cement", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Structural Steel", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Reinforcement Steel", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Bitumen", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "River sand", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Concrete", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Ready-mix concrete", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Binding wires", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Fly Ash", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Aggregate", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Bricks", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Blocks", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Timber (Wood)", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Limestone", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Laterite", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Thatch", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Foam", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Glass", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Gypcrete", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Plastic", "info": "PLACEHOLDER", "quantity": "100"},
+    {"name": "Ceramic Tiles", "info": "PLACEHOLDER", "quantity": "100"},
+  ];
+
+  Widget _buildCard(String name, String info, String quantity) {
+    return Card(
+      child: Column(
+        children: <Widget>[
+          Text(name),
+          Text(info),
+          Text(quantity)
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Supply Chain Management"),
-        backgroundColor: Colors.lightBlue,
+        title: Text("Welcome " + _auth.currentUser!.displayName.toString()),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(20.0),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image.asset(
-                  'assets/truck.jpg',
-                  scale: 10,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                OutlinedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const LoginPage()));
-                    },
-                    style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(140.0, 50.0)),
-                    child: const Text("Login", style: TextStyle(fontSize: 18.0))),
-                const SizedBox(
-                  height: 20,
-                ),
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const SignUp()));
-                  },
-                  style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(140.0, 50.0)),
-                  child: const Text("Sign Up", style: TextStyle(fontSize: 18.0)),
-                ),
-              ],
-            ),
-          ),
-        ),
+      body: ListView(
+        shrinkWrap: true,
+        children: items.map((item) => _buildCard(item["name"], item["info"], item["quantity"])).toList(),
       ),
     );
   }

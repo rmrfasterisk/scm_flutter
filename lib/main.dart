@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
-import 'package:scm_flutter/user_pages/home_page.dart';
+import 'package:scm_flutter/user_pages/default_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -9,7 +9,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomePage(),
+    debugShowCheckedModeBanner: false,
+    home: DefaultPage(),
   ));
 }
