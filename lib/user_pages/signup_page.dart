@@ -92,74 +92,77 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    return loading ? const Loading() : Scaffold(
-      body: SafeArea(
-        child: Container(
-          margin: const EdgeInsets.fromLTRB(15.0, 24.0, 15.0, 15.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                const SizedBox(
-                  height: 10.0,
-                ),
-                _buildName(),
-                const SizedBox(
-                  height: 10.0,
-                ),
-                _buildEmail(),
-                const SizedBox(
-                  height: 10.0,
-                ),
-                _buildPassword(),
-                const SizedBox(
-                  height: 10.0,
-                ),
-                _buildRole(),
-                const SizedBox(
-                  height: 10.0,
-                ),
-                OutlinedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                    }
-                    setState(() => loading = true);
-                    await _auth.createUserWithEmailAndPassword(
-                        email: _email, password: _password);
+    return loading
+        ? const Loading()
+        : Scaffold(
+            body: SafeArea(
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(15.0, 24.0, 15.0, 15.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      _buildName(),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      _buildEmail(),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      _buildPassword(),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      _buildRole(),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      OutlinedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                          }
+                          setState(() => loading = true);
+                          await _auth.createUserWithEmailAndPassword(
+                              email: _email, password: _password);
 
-                    Map<String, dynamic> userData = {
-                      "name": _name,
-                      "email": _email,
-                      "role": _role,
-                      "user_id": FieldValue.increment(1)
-                    };
+                          Map<String, dynamic> userData = {
+                            "name": _name,
+                            "email": _email,
+                            "role": _role,
+                            "user_id": FieldValue.increment(1)
+                          };
 
-                    await _db
-                        .collection("Users")
-                        .doc(_auth.currentUser!.uid)
-                        .set(userData);
+                          await _db
+                              .collection("Users")
+                              .doc(_auth.currentUser!.uid)
+                              .set(userData);
 
-                    await _auth.currentUser!.updateDisplayName(_name);
-                    setState(() => loading = false);
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()),
-                            (Route<dynamic> route) => false);
-                  },
-                  child: const Text(
-                    "Submit",
-                    style: TextStyle(color: Colors.blueAccent, fontSize: 18.0),
+                          await _auth.currentUser!.updateDisplayName(_name);
+                          setState(() => loading = false);
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()),
+                              (Route<dynamic> route) => false);
+                        },
+                        child: const Text(
+                          "Submit",
+                          style: TextStyle(
+                              color: Colors.blueAccent, fontSize: 18.0),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(140.0, 50.0)),
+                      )
+                    ],
                   ),
-                  style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(140.0, 50.0)),
-                )
-              ],
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 }

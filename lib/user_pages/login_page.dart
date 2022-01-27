@@ -55,44 +55,47 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return loading ? const Loading() : Scaffold(
-        body: SafeArea(
-      child: Container(
-          margin: const EdgeInsets.fromLTRB(15.0, 24.0, 15.0, 15.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                _buildEmail(),
-                const SizedBox(height: 10.0),
-                _buildPassword(),
-                const SizedBox(height: 10.0),
-                OutlinedButton(
-                  onPressed: () async {
-                    setState(() => loading = true);
-                      if (_formKey.currentState!.validate()) {
-                        _formKey.currentState!.save();
-                      }
+    return loading
+        ? const Loading()
+        : Scaffold(
+            body: SafeArea(
+            child: Container(
+                margin: const EdgeInsets.fromLTRB(15.0, 24.0, 15.0, 15.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      _buildEmail(),
+                      const SizedBox(height: 10.0),
+                      _buildPassword(),
+                      const SizedBox(height: 10.0),
+                      OutlinedButton(
+                        onPressed: () async {
+                          setState(() => loading = true);
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                          }
 
-                    _auth.signInWithEmailAndPassword(
-                        email: _email, password: _password);
-                    setState(() => loading = false);
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()),
-                        (Route<dynamic> route) => false);
-                  },
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(color: Colors.blueAccent, fontSize: 18.0),
+                          _auth.signInWithEmailAndPassword(
+                              email: _email, password: _password);
+                          setState(() => loading = false);
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()),
+                              (Route<dynamic> route) => false);
+                        },
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(
+                              color: Colors.blueAccent, fontSize: 18.0),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(140.0, 50.0)),
+                      )
+                    ],
                   ),
-                  style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(140.0, 50.0)),
-                )
-              ],
-            ),
-          )),
-    ));
+                )),
+          ));
   }
 }

@@ -29,23 +29,29 @@ class DefaultPage extends StatelessWidget {
                 ),
                 OutlinedButton(
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const LoginPage()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginPage()));
                     },
                     style: OutlinedButton.styleFrom(
                         minimumSize: const Size(140.0, 50.0)),
-                    child: const Text("Login", style: TextStyle(fontSize: 18.0))),
+                    child:
+                        const Text("Login", style: TextStyle(fontSize: 18.0))),
                 const SizedBox(
                   height: 20,
                 ),
                 OutlinedButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const SignUp()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignUp()));
                   },
                   style: OutlinedButton.styleFrom(
                       minimumSize: const Size(140.0, 50.0)),
-                  child: const Text("Sign Up", style: TextStyle(fontSize: 18.0)),
+                  child:
+                      const Text("Sign Up", style: TextStyle(fontSize: 18.0)),
                 ),
               ],
             ),

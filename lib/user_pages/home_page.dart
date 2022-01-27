@@ -38,11 +38,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildCard(String name, String info, String quantity) {
     return Card(
       child: Column(
-        children: <Widget>[
-          Text(name),
-          Text(info),
-          Text(quantity)
-        ],
+        children: <Widget>[Text(name), Text(info), Text(quantity)],
       ),
     );
   }
@@ -55,7 +51,10 @@ class _HomePageState extends State<HomePage> {
       ),
       body: ListView(
         shrinkWrap: true,
-        children: items.map((item) => _buildCard(item["name"], item["info"], item["quantity"])).toList(),
+        children: items
+            .map((item) =>
+                _buildCard(item["name"], item["info"], item["quantity"]))
+            .toList(),
       ),
     );
   }
