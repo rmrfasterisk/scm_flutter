@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                             _formKey.currentState!.save();
                           }
 
-                          _auth.signInWithEmailAndPassword(
+                          await _auth.signInWithEmailAndPassword(
                               email: _email, password: _password);
                           setState(() => loading = false);
                           Navigator.pushAndRemoveUntil(
