@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:scm_flutter/user_pages/home_page.dart';
+import 'package:scm_flutter/user_pages/buyer_page.dart';
 
 import 'loading.dart';
 
@@ -20,14 +20,12 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildEmail() {
     return TextFormField(
-      decoration: const InputDecoration(
-          labelText: "Email", border: OutlineInputBorder()),
+      decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          if (!RegExp(
-                  r"[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+          if (!RegExp(r"[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
               .hasMatch(value!)) {
-            return "Enter a valid email address";
+            return 'Enter a valid email address';
           }
         }
       },
@@ -39,12 +37,11 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildPassword() {
     return TextFormField(
-      decoration: const InputDecoration(
-          labelText: "Password", border: OutlineInputBorder()),
+      decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
       obscureText: true,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return "Password is required";
+          return 'Password is required';
         }
       },
       onSaved: (value) {
@@ -72,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                       OutlinedButton(
                         onPressed: () async {
                           setState(() => loading = true);
-                          if (_formKey.currentState!.validate()) {
+                          if (_formKey.currentState?.validate() ?? false) {
                             _formKey.currentState!.save();
                           }
 
@@ -81,17 +78,14 @@ class _LoginPageState extends State<LoginPage> {
                           setState(() => loading = false);
                           Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => const HomePage()),
+                              MaterialPageRoute(builder:  (context) => const BuyerPage()),
                               (Route<dynamic> route) => false);
                         },
                         child: const Text(
-                          "Login",
-                          style: TextStyle(
-                              color: Colors.blueAccent, fontSize: 18.0),
+                          'Login',
+                          style: TextStyle(color: Colors.blueAccent, fontSize: 18.0),
                         ),
-                        style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(140.0, 50.0)),
+                        style: OutlinedButton.styleFrom(minimumSize: const Size(140.0, 50.0)),
                       )
                     ],
                   ),

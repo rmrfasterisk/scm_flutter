@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:scm_flutter/user_pages/loading.dart';
-import 'package:scm_flutter/user_pages/home_page.dart';
+import 'package:scm_flutter/user_pages/buyer_page.dart';
+import 'package:scm_flutter/user_pages/seller_page.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -18,19 +19,18 @@ class _SignUpState extends State<SignUp> {
   late String _name;
   late String _email;
   late String _password;
-  String _role = "Buyer";
-  final List<String> _roles = ["Buyer", "Seller"];
+  String _role = 'Buyer';
+  final List<String> _roles = ['Buyer', 'Seller'];
   bool loading = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Widget _buildName() {
     return TextFormField(
-      decoration: const InputDecoration(
-          labelText: "Name", border: OutlineInputBorder()),
+      decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return "Name is required";
+          return 'Name is required';
         }
       },
       onSaved: (value) {
@@ -41,14 +41,12 @@ class _SignUpState extends State<SignUp> {
 
   Widget _buildEmail() {
     return TextFormField(
-      decoration: const InputDecoration(
-          labelText: "Email", border: OutlineInputBorder()),
+      decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          if (!RegExp(
-                  r"[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+          if (!RegExp(r"[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
               .hasMatch(value!)) {
-            return "Enter a valid email address";
+            return 'Enter a valid email address';
           }
         }
       },
@@ -60,13 +58,13 @@ class _SignUpState extends State<SignUp> {
 
   Widget _buildPassword() {
     return TextFormField(
-      decoration: const InputDecoration(
-          labelText: "Password", border: OutlineInputBorder()),
+      decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
       obscureText: true,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return "Password is required";
+          return 'Password is required';
         }
+        return null;
       },
       onSaved: (value) {
         _password = value!;
@@ -131,32 +129,33 @@ class _SignUpState extends State<SignUp> {
                               email: _email, password: _password);
 
                           Map<String, dynamic> userData = {
-                            "name": _name,
-                            "email": _email,
-                            "role": _role,
-                            "user_id": FieldValue.increment(1)
+                            'name': _name,
+                            'email': _email,
+                            'role': _role,
+                            'uid': FieldValue.increment(1)
                           };
 
-                          await _db
-                              .collection("Users")
-                              .doc(_auth.currentUser!.uid)
-                              .set(userData);
+                          await _db.collection('Users').doc(_auth.currentUser!.uid).set(userData);
 
                           await _auth.currentUser!.updateDisplayName(_name);
                           setState(() => loading = false);
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const HomePage()),
-                              (Route<dynamic> route) => false);
+                          if(_role=='Buyer') {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => const BuyerPage()),
+                                    (Route<dynamic> route) => false);
+                          } else {
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => const SellerPage()),
+                                    (Route<dynamic> route) => false);
+                          }
                         },
                         child: const Text(
-                          "Submit",
-                          style: TextStyle(
-                              color: Colors.blueAccent, fontSize: 18.0),
+                          'Submit',
+                          style: TextStyle(color: Colors.blueAccent, fontSize: 18.0),
                         ),
-                        style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(140.0, 50.0)),
+                        style: OutlinedButton.styleFrom(minimumSize: const Size(140.0, 50.0)),
                       )
                     ],
                   ),

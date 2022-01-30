@@ -1,108 +1,75 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:scm_flutter/models/userModel.dart';
 
-class CartPage extends StatelessWidget {
-  final cart;
-  final quantity;
-  var isRoleBuyer = false;
+import 'package:scm_flutter/models/item_model.dart';
 
-  CartPage(this.cart, this.quantity);
+import '../constants.dart';
 
-  Widget _userIsBuyer() {
-    return Scaffold(
-      floatingActionButton: const FloatingActionButton(onPressed: null, child: Icon(Icons.shopping_cart),),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ExpansionTile(
-                        childrenPadding: const EdgeInsets.all(16.0),
-                        title: Text(cart[index].name),
-                        children: [
-                          Text("Description: " + cart[index].info),
-                          const SizedBox(height: 16.0),
-                          Row(children: <Widget>[
-                            Text("Quantity: " + cart[index].quantity.toString()),
-                            const Spacer(),
-                          ])
-                        ],
-                      ),
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return const Divider();
-                },
-                itemCount: cart.length,
-                shrinkWrap: true,
-              ),
-            ),
+class CartPage extends StatefulWidget {
+  const CartPage({
+    required this.cart,
+    required this.quantity,
+    Key? key,
+  }) : super(key: key);
 
-          ],
-        ),
-      ),
-    );
-  }
+  final List<ItemModel> cart;
+  final int quantity;
 
-  Widget _userIsSeller() {
-    return Scaffold(
-      floatingActionButton: const FloatingActionButton(onPressed: null, child: Icon(Icons.add),),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ExpansionTile(
-                        childrenPadding: const EdgeInsets.all(16.0),
-                        title: Text(cart[index].name),
-                        children: [
-                          Text("Description: " + cart[index].info),
-                          const SizedBox(height: 16.0),
-                          Row(children: <Widget>[
-                            Text("Quantity: " + cart[index].quantity.toString()),
-                            const Spacer(),
-                          ])
-                        ],
-                      ),
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return const Divider();
-                },
-                itemCount: cart.length,
-                shrinkWrap: true,
-              ),
-            ),
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
 
-          ],
-        ),
-      ),
-    );
-  }
+class _CartPageState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _auth = FirebaseAuth.instance.currentUser;
-    final FirebaseFirestore _db = FirebaseFirestore.instance;
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: fs.collection('Users').doc(fbAuth!.uid).snapshots(),
+      builder: (context, snapshot) {
+        // final user = UserModel.fromMap(userDoc.data()!);
+        // return isRoleBuyer ? _userIsBuyer() : _userIsSeller();
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return const Text('Something went wrong');
+        }
 
-    return StreamBuilder<DocumentSnapshot>(
-      stream: _db.collection("Users").doc(_auth!.uid).snapshots(),
-        builder: (context, snapshot) {
-        final userDoc = _db.collection("Users").doc(_auth!.uid).get();
-       // final user = UserModel.fromMap(userDoc.data()!);
-      return isRoleBuyer ? _userIsBuyer() : _userIsSeller();
-    });
+        if (snapshot.hasData && !snapshot.data!.exists) {
+          return const Text('Document does not exist');
+        }
+
+        return Scaffold(
+          floatingActionButton: const FloatingActionButton(
+            onPressed: null,
+            child: Icon(Icons.shopping_cart_outlined),
+          ),
+          body: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: widget.cart.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          widget.cart[index].name,
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return const Divider();
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
